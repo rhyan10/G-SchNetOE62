@@ -47,7 +47,7 @@ class TemplateData(AtomsData):
     db_name = 'OE62.db'
     # name of the database after pre-processing (if the same as db_name, the original
     # database will be renamed to <db_name>.bak.db)
-    preprocessed_db_name = 'OE62.db'
+    preprocessed_db_name = 'OE62_gschnet.db'
     # all atom types found in molecules of the dataset
     available_atom_types = [1, 3, 5, 6, 7, 8, 9, 14, 15, 16, 17, 33, 34, 35, 52, 53]  # for example H, C, N, O, and F
     # valence constraints of the atom types (does not need to be provided unless a
