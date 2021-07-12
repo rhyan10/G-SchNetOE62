@@ -226,6 +226,16 @@ def get_parser():
                                 help='Number of bins used in the discrete '
                                      'distributions over distances learned by '
                                      'the model(default: %(default)s)')
+    gschnet_parser.add_argument('--use_embeddings_for_type_predictions',
+                                help='Copy extracted features and multiply them with '
+                                     'embeddings of all possible types to obtain '
+                                     'scores.',
+                                action='store_true')
+    gschnet_parser.add_argument('--share_embeddings',
+                                help='Share embedding layers in SchNet part and in '
+                                     'pre-processing before predicting distances and '
+                                     'types.',
+                                action='store_true')
 
     ## setup subparser structure
     cmd_subparsers = main_parser.add_subparsers(dest='mode',
@@ -261,21 +271,35 @@ def get_parser():
 
 
 def get_model(args, parallelize=False):
+    # get information about the atom types available in the data set
+    dataclass = dataset_name_to_class_mapping[args.dataset_name]
+    num_types = len(dataclass.available_atom_types)
+    max_type = max(dataclass.available_atom_types)
+
     # get SchNet layers for feature extraction
-    representation =\
+    representation = \
         spk.representation.SchNet(n_atom_basis=args.features,
                                   n_filters=args.features,
                                   n_interactions=args.interactions,
                                   cutoff=args.cutoff,
                                   n_gaussians=args.num_gaussians,
-                                  max_z=100)
+                                  max_z=max_type + 3)
+    if args.share_embeddings:
+        emb_layers = representation.embedding
+    else:
+        emb_layers = nn.Embedding(max_type + 3, args.features, padding_idx=0)
 
     # get output layers for prediction of next atom type
-    preprocess_type = \
-        EmbeddingMultiplication(representation.embedding,
-                                in_key_types='_all_types',
-                                in_key_representation='representation',
-                                out_key='preprocessed_representation')
+    if args.use_embeddings_for_type_predictions:
+        preprocess_type = \
+            EmbeddingMultiplication(emb_layers,
+                                    in_key_types='_all_types',
+                                    in_key_representation='representation',
+                                    out_key='preprocessed_representation')
+        _n_out = 1
+    else:
+        preprocess_type = None
+        _n_out = num_types + 1  # number of possible types + stop token
     postprocess_type = NormalizeAndAggregate(normalize=True,
                                              normalization_axis=-1,
                                              normalization_mode='logsoftmax',
@@ -287,7 +311,7 @@ def get_model(args, parallelize=False):
                                              squeeze=True)
     out_module_type = \
         AtomwiseWithProcessing(n_in=args.features,
-                               n_out=1,
+                               n_out=_n_out,
                                n_layers=5,
                                preprocess_layers=preprocess_type,
                                postprocess_layers=postprocess_type,
@@ -295,7 +319,7 @@ def get_model(args, parallelize=False):
 
     # get output layers for predictions of distances
     preprocess_dist = \
-        EmbeddingMultiplication(representation.embedding,
+        EmbeddingMultiplication(emb_layers,
                                 in_key_types='_next_types',
                                 in_key_representation='representation',
                                 out_key='preprocessed_representation')
