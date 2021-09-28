@@ -30,6 +30,10 @@ class Molecule:
 
     type_infos = {1: {'name': 'H',
                       'n_bonds': 1},
+                  3: {'name': 'Li',
+                      'n_bonds': 1},
+                  5: {'name': 'B',
+                      'n_bonds': 3},
                   6: {'name': 'C',
                       'n_bonds': 4},
                   7: {'name': 'N',
@@ -38,8 +42,26 @@ class Molecule:
                       'n_bonds': 2},
                   9: {'name': 'F',
                       'n_bonds': 1},
+                  14: {'name':'Si',
+                      'n_bonds': 4},
+                  15: {'name': 'P',
+                      'n_bonds': 5},
+                  16: {'name': 'S',
+                      'n_bonds': 6},
+                  17: {'name': 'Cl',
+                      'n_bonds': 1},
+                  33: {'name': 'As',
+                      'n_bonds': 5},
+                  34: {'name': 'Se',
+                      'n_bonds': 6},
+                  35: {'name': 'Br',
+                      'n_bonds': 1},
+                  52: {'name': 'Te',
+                      'n_bonds': 6},
+                  53: {'name': 'I',
+                      'n_bonds': 1},
                   }
-    type_charges = {'H': 1, 'C': 6, 'N': 7, 'O': 8, 'F': 9}
+    type_charges = {'H': 1, 'Li':3,'B':5,'C': 6, 'N': 7, 'O': 8, 'F': 9,'Si':14,'P':15,'S':16,'Cl':17,'As':33,'Se':34,'Br':35,'Te':52,'I':53}
 
     def __init__(self, pos, atomic_numbers, connectivity_matrix=None,
                  store_positions=False):

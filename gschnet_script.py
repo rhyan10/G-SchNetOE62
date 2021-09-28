@@ -475,7 +475,7 @@ def evaluate(args, model, train_loader, val_loader, test_loader, device):
 
     header = ','.join(header)
     results = np.array(results)
-
+    np.savez("prediction.npz",results)
     np.savetxt(os.path.join(args.modelpath, 'evaluation.csv'), results,
                header=header, fmt='%s', delimiter=',')
 

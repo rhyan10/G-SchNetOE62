@@ -44,7 +44,7 @@ def get_parser():
                                   'in the training or validation data)',
                              default=None)
     main_parser.add_argument('--valence',
-                             default=[1, 1, 6, 4, 7, 3, 8, 2, 9, 1], type=int,
+                             default=[1,1,3,1, 5,3, 6,4, 7,3, 8,2, 9,1, 14,4, 15,5, 16,6, 17,1, 33,5, 34,6, 35,1, 52,6, 53,1], type=int,
                              nargs='+',
                              help='the valence of atom types in the form '
                                   '[type1 valence type2 valence ...] '
@@ -674,6 +674,7 @@ def filter_new(mols, stats, stat_heads, model_path, train_data_path, print_file=
     print(f'Using data base at {dbpath}...')
 
     split_file = os.path.join(model_path, 'split.npz')
+    print(split_file)
     if not os.path.exists(split_file):
         raise FileNotFoundError
     S = np.load(split_file)
@@ -823,7 +824,8 @@ def get_fingerprint(pos, atomic_numbers, use_bits=False, con_mat=None):
     '''
     if con_mat is not None:
         mol = Molecule(pos, atomic_numbers, con_mat)
-        idc_lists = np.where(con_mat != 0)
+        print(mol)
+        idc_lists = np.where(con_mat !=0)
         mol._update_bond_orders(idc_lists)
         mol = pybel.Molecule(mol.get_obmol())
     else:
@@ -1047,6 +1049,7 @@ if __name__ == '__main__':
     if len(filters) >= 2:
         filters = filters[:-1] + ['and '] + filters[-1:]
     string = ''.join(filters)
+    print(valence_str)
     print(f'\n\n1. Filtering molecules according to {string}...')
     print(f'\nTarget valence:\n{valence_str[:-2]}\n')
 
@@ -1281,4 +1284,7 @@ if __name__ == '__main__':
 
     # print average atom, bond, and ring count statistics of generated molecules
     # stored in the database and of the training molecules
+    print(target_db)
+    print(args.model_path)
+    print(args.train_path)
     print_atom_bond_ring_stats(target_db, args.model_path, args.train_data_path)

@@ -44,10 +44,10 @@ class TemplateData(AtomsData):
 
     ##### Adjust the following settings to fit your data: #####
     # name of the database
-    db_name = 'OE62.db'
+    db_name = 'second_loop_training0.8.db'
     # name of the database after pre-processing (if the same as db_name, the original
     # database will be renamed to <db_name>.bak.db)
-    preprocessed_db_name = 'OE62_gschnet.db'
+    preprocessed_db_name = 'second_loop_training0.8_gschnet.db'
     # all atom types found in molecules of the dataset
     available_atom_types = [1, 3, 5, 6, 7, 8, 9, 14, 15, 16, 17, 33, 34, 35, 52, 53]  # for example H, C, N, O, and F
     # valence constraints of the atom types (does not need to be provided unless a
@@ -58,7 +58,7 @@ class TemplateData(AtomsData):
     # matrix, i.e. for sampling generation traces during training, and also to restrict
     # the grid around the focused atom during generation, as the next atom will always
     # be a neighbor of the focused atom)
-    radial_limits = [0.85, 2]
+    radial_limits = [0.5, 2]
 
     # used to decompress connectivity matrices
     connectivity_compressor = ConnectivityCompressor()

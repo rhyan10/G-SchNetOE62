@@ -244,6 +244,7 @@ def print_accumulated_staticstics(stats, stat_heads, name='generated',
         np_stats[i] = np.array(stats[idx, set])
         print_equally_spaced(stat_heads[idx], f'{np.mean(np_stats[i]):.2f}')
     # accumulate and transfer data from additive_fields
+    print(stat_heads)
     for i, key in enumerate(additive_fields):
         _idcs = [stat_heads.index(val) for val in additive_fields[key]]
         for idx in _idcs:
