@@ -171,7 +171,7 @@ def get_parser():
     gen_parser.add_argument('--max_length', type=int,
                             help='The maximum number of atoms per molecule '
                                  '(default: %(default)s)',
-                            default=35)
+                            default=100)
     gen_parser.add_argument('--file_name', type=str,
                             help='The name of the file in which generated '
                                  'molecules are stored (please note that '

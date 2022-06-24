@@ -610,7 +610,7 @@ if __name__ == '__main__':
     for geom in geoms:
         #os = geom.get_positions()
         atypes = geom.get_atomic_numbers()
-        if(sum(atypes)%2 == 0):
+        if(sum(atypes)%2 == 0) and len(atypes) > 2:
             molecule_to_keep.append(geom)
         else:
             pass
