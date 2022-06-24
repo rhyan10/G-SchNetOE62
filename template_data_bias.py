@@ -44,10 +44,10 @@ class TemplateData(AtomsData):
 
     ##### Adjust the following settings to fit your data: #####
     # name of the database
-    db_name = 'train.db'
+    db_name = 'OE62_gschnet.db'
     # name of the database after pre-processing (if the same as db_name, the original
     # database will be renamed to <db_name>.bak.db)
-    preprocessed_db_name = 'train_gschnet.db'
+    preprocessed_db_name = 'OE62_gschnet.db'
     # all atom types found in molecules of the dataset
     available_atom_types = [1, 3, 5, 6, 7, 8, 9, 14, 15, 16, 17, 33, 34, 35, 52, 53]  # for example H, C, N, O, and F
     # valence constraints of the atom types (does not need to be provided unless a
@@ -151,12 +151,12 @@ class TemplateData(AtomsData):
         # matrices as well as computation of pairwise distances between atoms)
         valence_list = \
             np.array([self.available_atom_types, self.atom_types_valence]).flatten('F')
-        preprocess_dataset(datapath=source_db,
-                           cutoff=self.radial_limits[-1],
-                           valence_list=list(valence_list),
-                           logging_print=True,
-                           new_db_path=self.db_path,
-                           precompute_distances=self.precompute_distances,
-                           remove_invalid=self.remove_invalid,
-                           invalid_list=invalid_list)
+        #preprocess_dataset(datapath=source_db,
+        #                   cutoff=self.radial_limits[-1],
+        #                   valence_list=list(valence_list),
+        #                   logging_print=True,
+        #                   new_db_path=self.db_path,
+        #                   precompute_distances=self.precompute_distances,
+        #                   remove_invalid=self.remove_invalid,
+        #                   invalid_list=invalid_list)
         return True

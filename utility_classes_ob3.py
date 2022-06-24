@@ -1,8 +1,14 @@
+'''
+Functionally identical to the regular utility_classes.py, except updated to use
+OpenBabel 3 rather than OpenBabel 2 (tested on ver. 3.1.1)
+'''
+
+
 import operator
 import re
 import numpy as np
-import openbabel as ob
-import pybel
+from openbabel import openbabel as ob
+from openbabel import pybel
 from multiprocessing import Process
 from rdkit import Chem
 from scipy.spatial.distance import squareform
@@ -71,7 +77,6 @@ class Molecule:
         self._can = None
         self._mirror_can = None
         self._inchi_key = None
-        self._inchi_string = None
         self._bond_stats = None
         self._fixed_connectivity = False
         self._row_indices = {}
@@ -188,19 +193,6 @@ class Molecule:
             self._flip_z()  # undo mirroring
         return self._mirror_can
 
-    def get_inchi_string(self):
-        '''
-        Retrieve the InChI string of the molecule.
-
-        Returns:
-             String: InChI string
-        '''
-        if self._inchi_string is None:
-            # calculate inchi string
-            self._inchi_string = pybel.Molecule(self.get_obmol()).\
-                write('inchi')
-        return self._inchi_string
-
     def get_inchi_key(self):
         '''
         Retrieve the InChI-key of the molecule.
@@ -243,7 +235,7 @@ class Molecule:
                 # loop over all neighbors of atom
                 for neighbor in ob.OBAtomAtomIter(atom):
                     idx = neighbor.GetIdx() - 1
-                    bond_order = neighbor.GetBond(atom).GetBO()
+                    bond_order = neighbor.GetBond(atom).GetBondOrder() # Updated to new standard.
                     #print(f'{index}-{idx}: {bond_order}')
                     # do not count bonds between two hydrogen atoms
                     if (self.numbers[index] == 1 and self.numbers[idx] == 1
@@ -267,79 +259,12 @@ class Molecule:
             # representation as input
             can = self.get_can()
             mol = Chem.MolFromSmiles(can)
-            # # Try calculating symmetric SSSR with RdKit using InChI instead of SMILES
-            # # to avoid incorrect SMILES representation.
-            # inchi = self.get_inchi_string()
-            # mol = Chem.MolFromInchi(inchi)
             if mol is not None:
                 ssr = Chem.GetSymmSSSR(mol)
                 self._rings = [len(ssr[i]) for i in range(len(ssr))]
             else:
                 self._rings = []  # cannot count rings
-
         return self._rings
-
-
-    def get_ring_counts_and_aromaticity(self):
-        '''
-        Retrieve a dictionary of the number of rings of each size present in a
-        molecule, determined by OpenBabel's smallest set of smallest rings. Also
-        retrieve if these rings are considered to be aromatic.
-        '''
-        if self._obmol is None:
-            self.get_obmol()
-                
-        ring_dict = {}
-        ring_list = self._obmol.GetSSSR()
-        for ring in ring_list:
-            ring_size = ring.Size()
-            ring_key = f'nrings_{ring_size}'
-            if ring_key not in ring_dict.keys():
-                ring_dict[ring_key] = 1
-            else:
-                ring_dict[ring_key] += 1
-
-            ring_aro = ring.IsAromatic()
-            if ring_aro:
-                ring_key = f'nrings_{ring_size}_aromatic'
-                if ring_key not in ring_dict.keys():
-                    ring_dict[ring_key] = 1
-                else:
-                    ring_dict[ring_key] += 1
-
-        return ring_dict
-
-    def get_aromaticity(self):
-        '''
-        Retrieve the percentage of atoms in the molecule (excluding hydrogens) which
-        are perceived as aromatic by OpenBabel. Also determine the number of atoms
-        of each element type which are aromatic.
-
-        Returns:
-            Tuple of float and dict.
-        '''
-        if self._obmol is None:
-            self.get_obmol()
-
-        natoms = 0.0
-        natoms_aro = 0.0
-        aro_dict = {}
-        for atom in ob.OBMolAtomIter(self._obmol):
-            atom_number = atom.GetAtomicNum()
-            atom_elem = self.type_infos[atom_number]['name']
-            if atom_elem != 'H':
-                natoms += 1.0
-                if atom.IsAromatic():
-                    natoms_aro += 1.0
-                    aro_key = f'n_aromatic_{atom_elem}'
-                    if aro_key in aro_dict.keys():
-                        aro_dict[aro_key] += 1
-                    else:
-                        aro_dict[aro_key] = 1
-        
-        aro_percent = (natoms_aro/natoms)*100
-
-        return aro_percent, aro_dict
 
     def get_n_atoms_per_type(self):
         '''
@@ -653,7 +578,7 @@ class Molecule:
                 type_arr = np.logical_or(type_arr, self.numbers == type)
         return np.where(np.logical_and(neighbors, type_arr))[0]
 
-    def get_bond_stats(self, ring_analysis='RDKit'):
+    def get_bond_stats(self):
         '''
         Retrieve the bond and ring count of the molecule. The bond count is
         calculated for every pair of types (e.g. C1N are all single bonds between
@@ -688,22 +613,17 @@ class Molecule:
                             d[id] = int(d[id]/2)  # remove twice counted bonds
 
             # 2nd analyze rings
-            if ring_analysis == 'RDKit':
-                ring_counts = self.get_ring_counts()
-                if len(ring_counts) > 0:
-                    ring_counts = np.bincount(np.array(ring_counts))
-                    n_bigger_8 = 0
-                    for i in np.nonzero(ring_counts)[0]:
-                        if i < 9:
-                            d[f'R{i}'] = ring_counts[i]
-                        else:
-                            n_bigger_8 += ring_counts[i]
-                    if n_bigger_8 > 0:
-                        d[f'R>8'] = n_bigger_8
-            elif ring_analysis == 'OpenBabel':
-                ring_dict = self.get_ring_counts_and_aromaticity()
-                d.update(ring_dict)
-
+            ring_counts = self.get_ring_counts()
+            if len(ring_counts) > 0:
+                ring_counts = np.bincount(np.array(ring_counts))
+                n_bigger_8 = 0
+                for i in np.nonzero(ring_counts)[0]:
+                    if i < 9:
+                        d[f'R{i}'] = ring_counts[i]
+                    else:
+                        n_bigger_8 += ring_counts[i]
+                if n_bigger_8 > 0:
+                    d[f'R>8'] = n_bigger_8
             self._bond_stats = d
 
         return self._bond_stats

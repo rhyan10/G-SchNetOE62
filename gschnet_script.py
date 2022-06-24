@@ -171,7 +171,7 @@ def get_parser():
     gen_parser.add_argument('--max_length', type=int,
                             help='The maximum number of atoms per molecule '
                                  '(default: %(default)s)',
-                            default=35)
+                            default=100)
     gen_parser.add_argument('--file_name', type=str,
                             help='The name of the file in which generated '
                                  'molecules are stored (please note that '
@@ -475,7 +475,7 @@ def evaluate(args, model, train_loader, val_loader, test_loader, device):
 
     header = ','.join(header)
     results = np.array(results)
-
+    np.savez("prediction.npz",results)
     np.savetxt(os.path.join(args.modelpath, 'evaluation.csv'), results,
                header=header, fmt='%s', delimiter=',')
 

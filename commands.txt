@@ -1,0 +1,2 @@
+python ./G-SchNetOE62/qm9_filter_generated.py ./models/model3/generated/generated.mol_dict --train_data_path ./data/OE62.db --model_path ./models/model3/gschnet
+
