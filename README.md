@@ -1,3 +1,4 @@
+#G-SchNetOE62
 Implementation of a method which looks to iteratively bias a generative model in order to produce molecules with a small HOMO-LUMO gap.
 
 # G-SchNet from https://github.com/atomistic-machine-learning/G-SchNet
