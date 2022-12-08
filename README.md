@@ -1,6 +1,8 @@
 # G-SchNetOE62 
-Implementation of a method which looks to iteratively build molecules with an increasingly smaller HOMO-LUMO gap using a technique biasing in the training of the generative model G-SchNet. A the full acompanying pre print can be found: https://arxiv.org/pdf/2207.01476.pdf
-For tutorials and installation on how to set up G-SchNet, please see the original G-SchNet repository: from https://github.com/atomistic-machine-learning/G-SchNet. A full tutorial, including code, on how to train and use G-SchNet for the OE62 dataset can be found here: Westermayr, Julia (2022): G-SchNet for OE62. figshare. Dataset. https://doi.org/10.6084/m9.figshare.20146943.v2
+Implementation of a method which looks to iteratively build molecules with an increasingly smaller HOMO-LUMO gap using a technique biasing in the training of the generative model G-SchNet. The full acompanying pre print can be found here: https://arxiv.org/pdf/2207.01476.pdf.
+For tutorials and installation on how to set up G-SchNet, please see the original G-SchNet repository: from https://github.com/atomistic-machine-learning/G-SchNet. A full tutorial, including code, on how to train and use G-SchNet for the OE62 dataset can be found here: Westermayr, Julia (2022): G-SchNet for OE62. figshare. Dataset. https://doi.org/10.6084/m9.figshare.20146943.v2.
+
+In this code base we only look at using the dataset OE62 with target features of small HOMO-LUMO gap, large LUMO and high HOMO. We provide all the neccesary code to run the generative model and all necessary filtering models and routines.
 
 For training G-SchNet on the OE62 data set, use this code and follow the tutorial, but replace the QM9 data set with the OE62 data set (https://www.nature.com/articles/s41597-020-0385-y). 
 Note: The adapted script to train OE62 is "template_data", hence add "--datset_name template_data" to the command used for training. 
