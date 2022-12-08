@@ -1,7 +1,6 @@
-#G-SchNetOE62
+# G-SchNetOE62 
+from https://github.com/atomistic-machine-learning/G-SchNet
 Implementation of a method which looks to iteratively bias a generative model in order to produce molecules with a small HOMO-LUMO gap.
-
-# G-SchNet from https://github.com/atomistic-machine-learning/G-SchNet
 For tutorials and installation, please see the original repository. For training G-SchNet on the OE62 data set, use this code and follow the tutorial, but replace the QM9 data set with the OE62 data set (https://www.nature.com/articles/s41597-020-0385-y). 
 Note: The adapted script to train OE62 is "template_data", hence add "--datset_name template_data" to the command used for training. 
  
